@@ -8,7 +8,7 @@ package db
 import (
 	"context"
 )
-    
+
 const createEntry = `-- name: CreateEntry :one
 INSERT INTO entries (
   account_id,
@@ -72,7 +72,7 @@ func (q *Queries) ListEntries(ctx context.Context, arg ListEntriesParams) ([]Ent
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Entry
+	items := []Entry{}
 	for rows.Next() {
 		var i Entry
 		if err := rows.Scan(
