@@ -50,7 +50,7 @@ mock:
 	mockgen -package mockwk -destination worker/mock/distributor.go github.com/techschool/simplebank/worker TaskDistributor
 
 proto:
-  rm -f pb/*.go
+	rm -f pb/*.proto
 	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
 	--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
 	proto/*.proto
