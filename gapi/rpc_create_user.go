@@ -3,11 +3,14 @@ package gapi
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	"github.com/40grivenprog/simple-bank/pb"
 	"github.com/40grivenprog/simple-bank/util"
 	"github.com/40grivenprog/simple-bank/val"
+	"github.com/40grivenprog/simple-bank/worker"
+	"github.com/hibiken/asynq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,12 +34,22 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	createdUser, err := server.store.CreateUser(ctx, arg)
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, status.Errorf(codes.AlreadyExists, "user already exsists: %s", err)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create user: %s", err)
+	}
+
+	opts := []asynq.Option{
+		asynq.MaxRetry(10),
+		asynq.ProcessIn(10 * time.Second),
+		asynq.Queue(worker.QueueCritical),
+	}
+
+	err = server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, worker.PayloadSendVerifyEmail{Username: createdUser.Username}, opts...)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to distribute send verify email: %s", err)
 	}
 
 	response := &pb.CreateUserResponse{
