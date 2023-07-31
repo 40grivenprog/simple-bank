@@ -6,6 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	db "github.com/40grivenprog/simple-bank/db/sqlc"
+	"github.com/40grivenprog/simple-bank/util"
+	"github.com/gobuffalo/helpers/content"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
 )
@@ -45,7 +48,7 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 		return fmt.Errorf("failed to unmarshall payload: %w", asynq.SkipRetry)
 	}
 
-	_, err = processor.store.GetUser(ctx, payload.Username)
+	user, err := processor.store.GetUser(ctx, payload.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return fmt.Errorf("user with such username does not exsist: %w", asynq.SkipRetry)
@@ -53,8 +56,27 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 		return fmt.Errorf("failed to get user: %w", err)
 	}
 
-	// TODO: send email to user
+	arg := db.CreateVerifyEmailParams{
+		Username:   user.Username,
+		Email:      user.Email,
+		SecretCode: util.RandomString(32),
+	}
+	verifyEmail, err := processor.store.CreateVerifyEmail(ctx, arg)
+	if err != nil {
+		return fmt.Errorf("failed to create virify email: %w", err)
+	}
+
+	subject := "Welcome to Simple Bank"
+	verifyEmailUrl := fmt.Sprintf("?id=%d&secret_code=%s", verifyEmail.ID, verifyEmail.SecretCode)
+	to := []string{verifyEmail.Email}
+	content := fmt.Sprintf(`Hello %s, <br/>
+	                       Thank tyou for registering with us
+												 Please <a href="%s"> click here</a> to verify your email address.`, user.FullName, verifyEmailUrl)
+	processor.mailer.SendEmail(subject, content, to, nil, nil, nil)
+	if err != nil {
+		return fmt.Errorf("failed to send verify email: %w", err)
+	}
 	log.Info().Msg("processed task")
-	
+
 	return nil
 }
