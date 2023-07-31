@@ -8,7 +8,6 @@ import (
 
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	"github.com/40grivenprog/simple-bank/util"
-	"github.com/gobuffalo/helpers/content"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
 )
@@ -67,7 +66,7 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 	}
 
 	subject := "Welcome to Simple Bank"
-	verifyEmailUrl := fmt.Sprintf("?id=%d&secret_code=%s", verifyEmail.ID, verifyEmail.SecretCode)
+	verifyEmailUrl := fmt.Sprintf("http://localhost:8080/v1/verify_email?verify_email_id=%d&secret_code=%s", verifyEmail.ID, verifyEmail.SecretCode)
 	to := []string{verifyEmail.Email}
 	content := fmt.Sprintf(`Hello %s, <br/>
 	                       Thank tyou for registering with us

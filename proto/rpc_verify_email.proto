@@ -1,0 +1,14 @@
+syntax="proto3";
+
+package pb;
+
+option go_package = "github.com/40grivenprog/simple-bank/pb";
+
+message VerifyEmailRequest {
+  int64 verify_email_id = 1;
+  string secret_code = 2;
+}
+
+message VerifyEmailResponse {
+  bool is_verified = 1;
+}
