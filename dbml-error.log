@@ -1,0 +1,54 @@
+2023-07-29T08:27:30.676Z
+SyntaxError: You have a syntax error at "db.dbml" line 14 column 1. Field "is_email_verified" existed in table "users"
+    at /home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/utils.js:45:13
+    at Array.forEach (<anonymous>)
+    at generate (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/utils.js:39:14)
+    at exportHandler (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/export.js:28:27)
+    at Object.dbml2sql (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/index.js:19:23)
+    at Object.<anonymous> (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/bin/dbml2sql.js:4:19)
+    at Module._compile (node:internal/modules/cjs/loader:1097:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1151:10)
+    at Module.load (node:internal/modules/cjs/loader:975:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+
+ROOT_ERROR:
+Error: Field "is_email_verified" existed in table "users"
+    at Field.error (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/element.js:55:13)
+    at Table.checkField (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:92:15)
+    at Table.pushField (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:83:12)
+    at /home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:75:16
+    at Array.forEach (<anonymous>)
+    at Table.processFields (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:74:17)
+    at new Table (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:58:11)
+    at /home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/database.js:118:30
+    at Array.forEach (<anonymous>)
+    at Database.processSchemaElements (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/database.js:107:16)
+{"start":{"offset":298,"line":14,"column":1},"end":{"offset":350,"line":15,"column":1}}
+
+2023-07-29T08:28:43.054Z
+SyntaxError: You have a syntax error at "db.dbml" line 14 column 1. Field "is_email_verified" existed in table "users"
+    at /home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/utils.js:45:13
+    at Array.forEach (<anonymous>)
+    at generate (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/utils.js:39:14)
+    at exportHandler (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/export.js:28:27)
+    at Object.dbml2sql (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/lib/cli/index.js:19:23)
+    at Object.<anonymous> (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/bin/dbml2sql.js:4:19)
+    at Module._compile (node:internal/modules/cjs/loader:1097:14)
+    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1151:10)
+    at Module.load (node:internal/modules/cjs/loader:975:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:822:12)
+
+ROOT_ERROR:
+Error: Field "is_email_verified" existed in table "users"
+    at Field.error (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/element.js:55:13)
+    at Table.checkField (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:92:15)
+    at Table.pushField (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:83:12)
+    at /home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:75:16
+    at Array.forEach (<anonymous>)
+    at Table.processFields (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:74:17)
+    at new Table (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/table.js:58:11)
+    at /home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/database.js:118:30
+    at Array.forEach (<anonymous>)
+    at Database.processSchemaElements (/home/maksimfilipenka/.nvm/versions/node/v17.5.0/lib/node_modules/@dbml/cli/node_modules/@dbml/core/lib/model_structure/database.js:107:16)
+{"start":{"offset":298,"line":14,"column":1},"end":{"offset":350,"line":15,"column":1}}
+

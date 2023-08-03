@@ -46,8 +46,8 @@ server:
 	go run main.go
 
 mock:
-	mockgen -package mockdb -destination db/mock/store.go github.com/techschool/simplebank/db/sqlc Store
-	mockgen -package mockwk -destination worker/mock/distributor.go github.com/techschool/simplebank/worker TaskDistributor
+	mockgen -package mockdb -destination db/mock/store.go github.com/40grivenprog/simple-bank/db/sqlc Store
+	mockgen -package mockwk -destination worker/mock/distributor.go github.com/40grivenprog/simple-bank/worker TaskDistributor
 
 proto:
 	rm -f pb/*.proto
@@ -63,6 +63,6 @@ evans:
 	evans --host localhost --port 9090 -r repl
 
 redis:
-	docker run --name redis -p 6379:6379 -d redis:7-alpine
+	docker run --name redis -p 6380:6379 -d redis:7-alpine
 
 .PHONY: network postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 new_migration db_docs db_schema sqlc test server mock proto evans redis

@@ -11,12 +11,15 @@ import (
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	_ "github.com/40grivenprog/simple-bank/doc/statik"
 	"github.com/40grivenprog/simple-bank/gapi"
+	"github.com/40grivenprog/simple-bank/mail"
 	"github.com/40grivenprog/simple-bank/pb"
 	"github.com/40grivenprog/simple-bank/util"
+	"github.com/40grivenprog/simple-bank/worker"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/hibiken/asynq"
 	_ "github.com/lib/pq"
 	"github.com/rakyll/statik/fs"
 	"google.golang.org/grpc"
@@ -36,12 +39,19 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
-	go runGatewayServer(config, store)
-	runGrpcServer(config, store)
+	redisOpt := asynq.RedisClientOpt{
+		Addr: config.RedisAddress,
+	}
+
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+
+	go runTaskProcessor(config, redisOpt, store)
+	go runGatewayServer(config, store, taskDistributor)
+	runGrpcServer(config, store, taskDistributor)
 }
 
-func runGrpcServer(config util.Config, store db.Store) {
-	server, err := gapi.NewServer(config, store)
+func runGrpcServer(config util.Config, store db.Store, taskDistributor worker.TaskDistributor) {
+	server, err := gapi.NewServer(config, store, taskDistributor)
 	if err != nil {
 		log.Fatal("cannot create grpc server", err)
 	}
@@ -64,8 +74,8 @@ func runGrpcServer(config util.Config, store db.Store) {
 	}
 }
 
-func runGatewayServer(config util.Config, store db.Store) {
-	server, err := gapi.NewServer(config, store)
+func runGatewayServer(config util.Config, store db.Store, taskDistributor worker.TaskDistributor) {
+	server, err := gapi.NewServer(config, store, taskDistributor)
 	if err != nil {
 		log.Fatal("cannot create grpc server", err)
 	}
@@ -136,4 +146,16 @@ func runDBMigration(migrationURL string, dbSource string) {
 	}
 
 	log.Println("db migrated successfully")
+}
+
+func runTaskProcessor(config util.Config, redisOpt asynq.RedisClientOpt, store db.Store) {
+	mailer := mail.NewGmailSender(config.EmailSenderName, config.EmailSenderAddress, config.EmailSenderPassword)
+	worker := worker.NewRedisTaskProcessor(redisOpt, store, mailer)
+
+	log.Println("starting task processor")
+
+	err := worker.Start()
+	if err != nil {
+		log.Fatal("failed to start task processor")
+	}
 }

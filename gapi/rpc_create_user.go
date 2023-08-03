@@ -3,11 +3,14 @@ package gapi
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	"github.com/40grivenprog/simple-bank/pb"
 	"github.com/40grivenprog/simple-bank/util"
 	"github.com/40grivenprog/simple-bank/val"
+	"github.com/40grivenprog/simple-bank/worker"
+	"github.com/hibiken/asynq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -23,14 +26,25 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 		return nil, status.Errorf(codes.Internal, "failed to hash password: %s", err)
 	}
 
-	arg := db.CreateUserParams{
-		Username:       req.GetUsername(),
-		HashedPassword: hashedPassword,
-		FullName:       req.GetFullName(),
-		Email:          req.GetEmail(),
+	arg := db.CreateUserTxParams{
+		CreateUserParams: db.CreateUserParams{
+			Username:       req.GetUsername(),
+			HashedPassword: hashedPassword,
+			FullName:       req.GetFullName(),
+			Email:          req.GetEmail(),
+		},
+		AfterCreate: func(user db.User) error {
+			opts := []asynq.Option{
+				asynq.MaxRetry(10),
+				asynq.ProcessIn(10 * time.Second),
+				asynq.Queue(worker.QueueCritical),
+			}
+
+			return server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, worker.PayloadSendVerifyEmail{Username: user.Username}, opts...)
+		},
 	}
 
-	createdUser, err := server.store.CreateUser(ctx, arg)
+	createUserTxResult, err := server.store.CreateUserTx(ctx, arg)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -40,7 +54,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	response := &pb.CreateUserResponse{
-		User: convertUser(createdUser),
+		User: convertUser(createUserTxResult.User),
 	}
 
 	return response, nil
