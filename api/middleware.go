@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	"github.com/40grivenprog/simple-bank/token"
 	"github.com/gin-gonic/gin"
 )
@@ -46,5 +47,15 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 		}
 		ctx.Set(authorizationPayloadKey, payload)
 		ctx.Next()
+	}
+}
+
+func roleMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+		if authPayload.Role != db.UserRoleAdmin {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, errorResponse(errors.New("Not authorized to perform this action")))
+			return
+		}
 	}
 }

@@ -4,7 +4,9 @@ network:
 	docker network create bank-network
 
 postgres:
-	docker run --name postgres --network bank-network -p 49152:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:14-alpine
+	docker run --name postgres --network bank-network -p 49152:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret postgres:14-alpine
+redis:
+	docker run --name redis -p 6380:6379 redis:7-alpine
 
 mysql:
 	docker run --name mysql8 -p 3306:3306  -e MYSQL_ROOT_PASSWORD=secret -d mysql:8
@@ -61,8 +63,5 @@ proto:
 
 evans:
 	evans --host localhost --port 9090 -r repl
-
-redis:
-	docker run --name redis -p 6380:6379 -d redis:7-alpine
 
 .PHONY: network postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 new_migration db_docs db_schema sqlc test server mock proto evans redis

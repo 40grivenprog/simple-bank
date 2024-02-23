@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	"github.com/google/uuid"
 )
 
@@ -12,12 +13,13 @@ var ErrInvalidToken = errors.New("invalid token")
 
 type Payload struct {
 	ID        uuid.UUID
-	Username  string    `json:"username"`
-	IssuedAt  time.Time `json:"issued_at"`
-	ExpiredAt time.Time `json:"expired_at"`
+	Username  string      `json:"username"`
+	Role      db.UserRole `json:"role"`
+	IssuedAt  time.Time   `json:"issued_at"`
+	ExpiredAt time.Time   `json:"expired_at"`
 }
 
-func NewPayload(username string, duration time.Duration) (*Payload, error) {
+func NewPayload(username string, role db.UserRole, duration time.Duration) (*Payload, error) {
 	tokenId, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
@@ -26,6 +28,7 @@ func NewPayload(username string, duration time.Duration) (*Payload, error) {
 	payload := &Payload{
 		ID:        tokenId,
 		Username:  username,
+		Role:      role,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}

@@ -6,6 +6,12 @@ services:
         - POSTGRES_USER=root
         - POSTGRES_PASSWORD=secret
         - POSTGRES_DB=simple_bank
+
+    redis:
+      image: redis
+      ports:
+        - "6380:6379"
+      command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
     
     api:
       build:
@@ -17,6 +23,7 @@ services:
         - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
       depends_on:
         - postgres
+        - redis
       entrypoint:
         [
           "/app/wait-for.sh",

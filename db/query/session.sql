@@ -12,5 +12,7 @@ INSERT INTO sessions (
 ) RETURNING *;
 
 -- name: GetSession :one
-SELECT * FROM sessions
+SELECT sessions.*, users.role FROM sessions
+JOIN users
+ON users.username = sessions.username
 WHERE id = $1 LIMIT 1;
