@@ -216,10 +216,10 @@ func (mr *MockStoreMockRecorder) GetEntry(arg0, arg1 interface{}) *gomock.Call {
 }
 
 // GetSession mocks base method.
-func (m *MockStore) GetSession(arg0 context.Context, arg1 uuid.UUID) (db.Session, error) {
+func (m *MockStore) GetSession(arg0 context.Context, arg1 uuid.UUID) (db.GetSessionRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSession", arg0, arg1)
-	ret0, _ := ret[0].(db.Session)
+	ret0, _ := ret[0].(db.GetSessionRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

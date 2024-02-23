@@ -62,6 +62,12 @@ func randomUser(t *testing.T) (user db.User, password string) {
 	return
 }
 
+func randomAdminUser(t *testing.T) (user db.User, password string) {
+	user, password = randomUser(t)
+	user.Role = db.UserRoleAdmin
+	return
+}
+
 func TestCreateUserAPI(t *testing.T) {
 	user, password := randomUser(t)
 

@@ -1,14 +1,12 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	"github.com/40grivenprog/simple-bank/token"
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 )
 
 type CreateAccountRequest struct {
@@ -32,13 +30,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 
 	createdAccount, err := server.store.CreateAccount(ctx, arg)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			switch pqErr.Code.Name() {
-			case "foreign_key_violation", "unique_violation":
-				ctx.JSON(http.StatusForbidden, errorResponse(err))
-			}
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		handleEror(ctx, err)
 		return
 	}
 
@@ -58,11 +50,7 @@ func (server *Server) getAccount(ctx *gin.Context) {
 
 	account, err := server.store.GetAccount(ctx, req.ID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		handleEror(ctx, err)
 		return
 	}
 
@@ -86,9 +74,7 @@ func (server *Server) listAccounts(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.ListAccountsParams{
-		Owner:  authPayload.Username,
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}

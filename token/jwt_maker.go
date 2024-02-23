@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -23,8 +24,8 @@ func NewJWTMaker(secretKey string) (Maker, error) {
 }
 
 // CreateToken creates a new token for a specific username and duration
-func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (string, *Payload, error) {
-	payload, err := NewPayload(username, duration)
+func (maker *JWTMaker) CreateToken(username string, role db.UserRole, duration time.Duration) (string, *Payload, error) {
+	payload, err := NewPayload(username, role, duration)
 	if err != nil {
 		return "", payload, err
 	}
