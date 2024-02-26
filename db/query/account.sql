@@ -37,3 +37,8 @@ RETURNING *;
 
 -- name: DeleteAccount :exec
 DELETE FROM accounts WHERE id = $1; 
+
+-- name: GetAccountByUsernameAndCurrency :one
+SELECT * FROM accounts
+WHERE owner = $1 AND currency = $2
+LIMIT 1;

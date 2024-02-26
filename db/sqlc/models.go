@@ -5,12 +5,56 @@
 package db
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
+
+type CreditRequestsStatus string
+
+const (
+	CreditRequestsStatusApproved  CreditRequestsStatus = "approved"
+	CreditRequestsStatusPending   CreditRequestsStatus = "pending"
+	CreditRequestsStatusCancelled CreditRequestsStatus = "cancelled"
+)
+
+func (e *CreditRequestsStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = CreditRequestsStatus(s)
+	case string:
+		*e = CreditRequestsStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for CreditRequestsStatus: %T", src)
+	}
+	return nil
+}
+
+type NullCreditRequestsStatus struct {
+	CreditRequestsStatus CreditRequestsStatus `json:"credit_requests_status"`
+	Valid                bool                 `json:"valid"` // Valid is true if CreditRequestsStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullCreditRequestsStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.CreditRequestsStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.CreditRequestsStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullCreditRequestsStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.CreditRequestsStatus), nil
+}
 
 type UserRole string
 
@@ -60,6 +104,16 @@ type Account struct {
 	Balance   int64     `json:"balance"`
 	Currency  string    `json:"currency"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type CreditRequest struct {
+	ID        int64                `json:"id"`
+	Status    CreditRequestsStatus `json:"status"`
+	Amount    int32                `json:"amount"`
+	Reason    sql.NullString       `json:"reason"`
+	Username  string               `json:"username"`
+	Currency  string               `json:"currency"`
+	CreatedAt time.Time            `json:"created_at"`
 }
 
 type Entry struct {

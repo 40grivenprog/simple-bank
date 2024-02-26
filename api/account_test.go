@@ -194,7 +194,7 @@ func TestListAccounts(t *testing.T) {
 			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/accounts?page_id=%d&page_size=%d", pageId, pageSize)
+			url := fmt.Sprintf("/admin/accounts?page_id=%d&page_size=%d", pageId, pageSize)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 			tc.setupAuth(t, request, server.tokenMaker)

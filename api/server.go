@@ -47,9 +47,13 @@ func (server *Server) setupRouter() {
 	authRoutes.POST("/accounts", server.createAccount)
 	authRoutes.GET("/accounts/:id", server.getAccount)
 	authRoutes.POST("/transfers", server.createTransfer)
+	authRoutes.POST("/credit_requests", server.createCreditRequest)
+	authRoutes.GET("/credit_requests", server.listCreditRequests)
 
-	adminRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker), roleMiddleware())
+	adminRoutes := router.Group("/admin/").Use(authMiddleware(server.tokenMaker), roleMiddleware())
 	adminRoutes.GET("/accounts", server.listAccounts)
+	adminRoutes.GET("/credit_requests", server.listPengingCreditRequest)
+	adminRoutes.PATCH("/credit_requests/:id", server.cancelPendingRequest)
 
 	server.router = router
 }
