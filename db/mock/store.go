@@ -51,6 +51,21 @@ func (mr *MockStoreMockRecorder) AddAccountBalance(arg0, arg1 interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAccountBalance", reflect.TypeOf((*MockStore)(nil).AddAccountBalance), arg0, arg1)
 }
 
+// CancelCreditRequestById mocks base method.
+func (m *MockStore) CancelCreditRequestById(arg0 context.Context, arg1 int64) (db.CreditRequest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CancelCreditRequestById", arg0, arg1)
+	ret0, _ := ret[0].(db.CreditRequest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CancelCreditRequestById indicates an expected call of CancelCreditRequestById.
+func (mr *MockStoreMockRecorder) CancelCreditRequestById(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CancelCreditRequestById", reflect.TypeOf((*MockStore)(nil).CancelCreditRequestById), arg0, arg1)
+}
+
 // CreateAccount mocks base method.
 func (m *MockStore) CreateAccount(arg0 context.Context, arg1 db.CreateAccountParams) (db.Account, error) {
 	m.ctrl.T.Helper()
@@ -64,6 +79,21 @@ func (m *MockStore) CreateAccount(arg0 context.Context, arg1 db.CreateAccountPar
 func (mr *MockStoreMockRecorder) CreateAccount(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockStore)(nil).CreateAccount), arg0, arg1)
+}
+
+// CreateCreditRequest mocks base method.
+func (m *MockStore) CreateCreditRequest(arg0 context.Context, arg1 db.CreateCreditRequestParams) (db.CreditRequest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateCreditRequest", arg0, arg1)
+	ret0, _ := ret[0].(db.CreditRequest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateCreditRequest indicates an expected call of CreateCreditRequest.
+func (mr *MockStoreMockRecorder) CreateCreditRequest(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCreditRequest", reflect.TypeOf((*MockStore)(nil).CreateCreditRequest), arg0, arg1)
 }
 
 // CreateEntry mocks base method.
@@ -185,6 +215,21 @@ func (mr *MockStoreMockRecorder) GetAccount(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccount", reflect.TypeOf((*MockStore)(nil).GetAccount), arg0, arg1)
 }
 
+// GetAccountByUsernameAndCurrency mocks base method.
+func (m *MockStore) GetAccountByUsernameAndCurrency(arg0 context.Context, arg1 db.GetAccountByUsernameAndCurrencyParams) (db.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAccountByUsernameAndCurrency", arg0, arg1)
+	ret0, _ := ret[0].(db.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAccountByUsernameAndCurrency indicates an expected call of GetAccountByUsernameAndCurrency.
+func (mr *MockStoreMockRecorder) GetAccountByUsernameAndCurrency(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountByUsernameAndCurrency", reflect.TypeOf((*MockStore)(nil).GetAccountByUsernameAndCurrency), arg0, arg1)
+}
+
 // GetAccountForUpdate mocks base method.
 func (m *MockStore) GetAccountForUpdate(arg0 context.Context, arg1 int64) (db.Account, error) {
 	m.ctrl.T.Helper()
@@ -200,6 +245,21 @@ func (mr *MockStoreMockRecorder) GetAccountForUpdate(arg0, arg1 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccountForUpdate", reflect.TypeOf((*MockStore)(nil).GetAccountForUpdate), arg0, arg1)
 }
 
+// GetCreditRequestsByUsername mocks base method.
+func (m *MockStore) GetCreditRequestsByUsername(arg0 context.Context, arg1 string) ([]db.CreditRequest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCreditRequestsByUsername", arg0, arg1)
+	ret0, _ := ret[0].([]db.CreditRequest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCreditRequestsByUsername indicates an expected call of GetCreditRequestsByUsername.
+func (mr *MockStoreMockRecorder) GetCreditRequestsByUsername(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreditRequestsByUsername", reflect.TypeOf((*MockStore)(nil).GetCreditRequestsByUsername), arg0, arg1)
+}
+
 // GetEntry mocks base method.
 func (m *MockStore) GetEntry(arg0 context.Context, arg1 int64) (db.Entry, error) {
 	m.ctrl.T.Helper()
@@ -213,6 +273,21 @@ func (m *MockStore) GetEntry(arg0 context.Context, arg1 int64) (db.Entry, error)
 func (mr *MockStoreMockRecorder) GetEntry(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEntry", reflect.TypeOf((*MockStore)(nil).GetEntry), arg0, arg1)
+}
+
+// GetPendingCreditRequestById mocks base method.
+func (m *MockStore) GetPendingCreditRequestById(arg0 context.Context, arg1 int64) (db.CreditRequest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPendingCreditRequestById", arg0, arg1)
+	ret0, _ := ret[0].(db.CreditRequest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPendingCreditRequestById indicates an expected call of GetPendingCreditRequestById.
+func (mr *MockStoreMockRecorder) GetPendingCreditRequestById(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPendingCreditRequestById", reflect.TypeOf((*MockStore)(nil).GetPendingCreditRequestById), arg0, arg1)
 }
 
 // GetSession mocks base method.
@@ -258,6 +333,21 @@ func (m *MockStore) GetUser(arg0 context.Context, arg1 string) (db.User, error) 
 func (mr *MockStoreMockRecorder) GetUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockStore)(nil).GetUser), arg0, arg1)
+}
+
+// GetUsersPendingCreditRequests mocks base method.
+func (m *MockStore) GetUsersPendingCreditRequests(arg0 context.Context) ([]db.CreditRequest, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersPendingCreditRequests", arg0)
+	ret0, _ := ret[0].([]db.CreditRequest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersPendingCreditRequests indicates an expected call of GetUsersPendingCreditRequests.
+func (mr *MockStoreMockRecorder) GetUsersPendingCreditRequests(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersPendingCreditRequests", reflect.TypeOf((*MockStore)(nil).GetUsersPendingCreditRequests), arg0)
 }
 
 // ListAccounts mocks base method.
