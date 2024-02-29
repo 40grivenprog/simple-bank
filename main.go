@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"net"
 	"net/http"
@@ -11,6 +10,7 @@ import (
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
 	_ "github.com/40grivenprog/simple-bank/doc/statik"
 	"github.com/40grivenprog/simple-bank/gapi"
+	"github.com/40grivenprog/simple-bank/jaeger"
 	"github.com/40grivenprog/simple-bank/mail"
 	"github.com/40grivenprog/simple-bank/pb"
 	"github.com/40grivenprog/simple-bank/util"
@@ -21,6 +21,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/hibiken/asynq"
 	_ "github.com/lib/pq"
+	"github.com/opentracing/opentracing-go"
 	"github.com/rakyll/statik/fs"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -33,12 +34,20 @@ func main() {
 		log.Fatal("cannot load config:", err)
 	}
 
-	conn, err := sql.Open(config.DBDriver, config.DBSource)
+	tracer, closer, err := jaeger.InitJaeger()
+	defer closer.Close()
+	if err != nil {
+		log.Fatal("failed to init jaeger")
+	}
+
+	opentracing.SetGlobalTracer(tracer)
+
+	tracedDb, err := db.NewTracedDB(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("can not connect to db")
 	}
 
-	store := db.NewStore(conn)
+	store := db.NewStore(tracedDb)
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}
