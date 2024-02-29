@@ -1,35 +1,45 @@
 version: '3.9'
 services:
-    postgres:
-      image: postgres:12-alpine
-      environment:
-        - POSTGRES_USER=root
-        - POSTGRES_PASSWORD=secret
-        - POSTGRES_DB=simple_bank
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=simple_bank
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
 
-    redis:
-      image: redis
-      ports:
-        - "6380:6379"
-      command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
-    
-    api:
-      build:
-        context: .
-        dockerfile: Dockerfile
-      ports:
-        - "8080:8080"
-      environment:
-        - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
-      depends_on:
-        - postgres
-        - redis
-      entrypoint:
-        [
-          "/app/wait-for.sh",
-          "postgres:5432",
-          "--",
-          "/app/start.sh"
-        ]
-      command: [ "/app/main" ]
+  redis:
+    image: redis
+    ports:
+      - "6380:6379"
+    command: ["redis-server", "--bind", "0.0.0.0", "--port", "6379"]
+  
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:1.39
+    restart: always
+    ports:
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 16686:16686
+      - 14268:14268
+  
+  api:
+    image: simple-bank-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/simple_bank?sslmode=disable
+    depends_on:
+      - postgres
+      - redis
+    entrypoint:
+      [
+        "/wait-for.sh",
+        "postgres:5432",
+        "--",
+        "/start.sh",
+      ]
+    command: [ "./main" ]
     

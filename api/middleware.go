@@ -7,8 +7,10 @@ import (
 	"strings"
 
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
+	"github.com/40grivenprog/simple-bank/jaeger"
 	"github.com/40grivenprog/simple-bank/token"
 	"github.com/gin-gonic/gin"
+	"github.com/opentracing/opentracing-go/ext"
 )
 
 const (
@@ -16,6 +18,24 @@ const (
 	authorizationTypeBearer = "bearer"
 	authorizationPayloadKey = "authorization_payload"
 )
+
+func tracingMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		spanCtx, _ := jaeger.Extract(jaeger.Tracer, c.Request)
+		span := jaeger.Tracer.StartSpan(c.Request.URL.Path, ext.RPCServerOption(spanCtx))
+		defer span.Finish()
+
+		err := jaeger.Inject(span, c.Request)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to inject span context"})
+			return
+		}
+
+		c.Set("span", span)
+
+		c.Next()
+	}
+}
 
 func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

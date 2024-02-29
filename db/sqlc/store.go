@@ -19,9 +19,9 @@ type SQLStore struct {
 	*Queries
 }
 
-func NewStore(db *sql.DB) Store {
+func NewStore(db *TracedDB) Store {
 	return &SQLStore{
-		db:      db,
+		db:      db.db,
 		Queries: New(db),
 	}
 }
