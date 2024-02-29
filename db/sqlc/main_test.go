@@ -11,7 +11,11 @@ import (
 )
 
 var testQueries *Queries
-var testDB *sql.DB
+var testDBInstance *testDB
+
+type testDB struct {
+	*sql.DB
+}
 
 
 func TestMain(m *testing.M) {
@@ -20,12 +24,28 @@ func TestMain(m *testing.M) {
 		log.Fatal("can not read config:", err)
 	}
 
-	testDB, err = sql.Open(config.DBDriver, config.DBSource)
+	testDBInstance, err = newTestDB(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("can not connect to db")
 	}
 
-	testQueries = New(testDB)
+	testQueries = New(testDBInstance)
 
 	os.Exit(m.Run())
+}
+
+func newTestStore(db *testDB) Store {
+	return &SQLStore{
+		db:      db.DB,
+		Queries: New(db),
+	}
+}
+
+func newTestDB(dbDriver, dbSource string) (*testDB, error) {
+	conn, err := sql.Open(dbDriver, dbSource)
+	if err != nil {
+		return nil, err
+	}
+
+	return &testDB{conn}, nil
 }

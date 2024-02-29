@@ -41,13 +41,13 @@ func main() {
 	}
 
 	opentracing.SetGlobalTracer(tracer)
-	
-	conn, err := db.NewTracedDB(config.DBDriver, config.DBSource)
+
+	tracedDb, err := db.NewTracedDB(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("can not connect to db")
 	}
 
-	store := db.NewStore(conn)
+	store := db.NewStore(tracedDb)
 	redisOpt := asynq.RedisClientOpt{
 		Addr: config.RedisAddress,
 	}

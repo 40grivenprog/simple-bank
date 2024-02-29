@@ -10,7 +10,7 @@ import (
 )
 
 type TracedDB struct {
-	db *sql.DB
+	*sql.DB
 }
 
 func NewTracedDB(dbDriver, dbSource string) (*TracedDB, error) {
@@ -22,32 +22,36 @@ func NewTracedDB(dbDriver, dbSource string) (*TracedDB, error) {
 	return &TracedDB{conn}, nil
 }
 
+func (tdb *TracedDB) GetConnection() *sql.DB {
+	return tdb.DB
+}
+
 func (tdb *TracedDB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
 	span, ctx := startSpanFromContext(ctx, extractQueryName(query))
 	defer span.Finish()
 
-	return tdb.db.ExecContext(ctx, query, args...)
+	return tdb.DB.ExecContext(ctx, query, args...)
 }
 
 func (tdb *TracedDB) PrepareContext(ctx context.Context, query string) (*sql.Stmt, error) {
 	span, ctx := startSpanFromContext(ctx, extractQueryName(query))
 	defer span.Finish()
 
-	return tdb.db.PrepareContext(ctx, query)
+	return tdb.DB.PrepareContext(ctx, query)
 }
 
 func (tdb *TracedDB) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
 	span, ctx := startSpanFromContext(ctx, extractQueryName(query))
 	defer span.Finish()
 
-	return tdb.db.QueryContext(ctx, query, args...)
+	return tdb.DB.QueryContext(ctx, query, args...)
 }
 
 func (tdb *TracedDB) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
 	span, ctx := startSpanFromContext(ctx, extractQueryName(query))
 	defer span.Finish()
 
-	return tdb.db.QueryRowContext(ctx, query, args...)
+	return tdb.DB.QueryRowContext(ctx, query, args...)
 }
 
 func startSpanFromContext(ctx context.Context, operationName string) (opentracing.Span, context.Context) {

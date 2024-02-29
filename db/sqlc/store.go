@@ -21,7 +21,7 @@ type SQLStore struct {
 
 func NewStore(db *TracedDB) Store {
 	return &SQLStore{
-		db:      db.db,
+		db:      db.DB,
 		Queries: New(db),
 	}
 }
