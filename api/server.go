@@ -58,6 +58,9 @@ func (server *Server) setupRouter() {
 	adminRoutes.GET("/credit_requests", server.listPengingCreditRequest)
 	adminRoutes.PATCH("/credit_requests/:id", server.cancelPendingRequest)
 
+	accountRoutes := router.Group("/account/:account_id").Use(authMiddleware(server.tokenMaker))
+	accountRoutes.GET("/entries", server.listEntries)
+
 	server.router = router
 }
 
