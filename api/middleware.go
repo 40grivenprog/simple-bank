@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	db "github.com/40grivenprog/simple-bank/db/sqlc"
@@ -11,6 +12,7 @@ import (
 	"github.com/40grivenprog/simple-bank/token"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go/ext"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -18,6 +20,28 @@ const (
 	authorizationTypeBearer = "bearer"
 	authorizationPayloadKey = "authorization_payload"
 )
+
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (rw *responseWriter) WriteHeader(code int) {
+	rw.statusCode = code
+	rw.ResponseWriter.WriteHeader(code)
+}
+
+func prometheusMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		path := c.Request.URL.Path
+		timer := prometheus.NewTimer(httpDuration.WithLabelValues(path))
+		rw := &responseWriter{ResponseWriter: c.Writer}
+		c.Next()
+		totalRequests.WithLabelValues(path).Inc()
+		responseStatus.WithLabelValues(strconv.Itoa(rw.statusCode)).Inc()
+		timer.ObserveDuration()
+	}
+}
 
 func tracingMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {

@@ -24,6 +24,28 @@ services:
       - 6832:6832/udp
       - 16686:16686
       - 14268:14268
+
+  prometheus:
+    image: prom/prometheus:v2.24.0
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
   
   api:
     image: simple-bank-api
@@ -42,4 +64,9 @@ services:
         "/start.sh",
       ]
     command: [ "./main" ]
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana-storage:
     

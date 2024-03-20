@@ -77,7 +77,7 @@ func runGrpcServer(config util.Config, store db.Store, taskDistributor worker.Ta
 	if err != nil {
 		log.Fatal("cannot create grpc listener", err)
 	}
-	log.Printf("start gRPC server on this address", listener.Addr().String())
+	log.Println("start gRPC server on this address", listener.Addr().String())
 	err = grpcServer.Serve(listener)
 	if err != nil {
 		log.Fatal("cannot start grpc server", err)

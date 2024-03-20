@@ -9,6 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Server struct {
@@ -18,7 +21,29 @@ type Server struct {
 	tokenMaker token.Maker
 }
 
+var totalRequests = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "http_requests_total",
+		Help: "Number of get requests.",
+	},
+	[]string{"path"},
+)
+
+var responseStatus = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "response_status",
+		Help: "Status of HTTP response",
+	},
+	[]string{"status"},
+)
+
+var httpDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+	Name: "http_response_time_seconds",
+	Help: "Duration of HTTP requests.",
+}, []string{"path"})
+
 func NewServer(config util.Config, store db.Store) (*Server, error) {
+	setupPrometheus()
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
@@ -40,6 +65,8 @@ func (server *Server) setupRouter() {
 	router := gin.Default()
 	if gin.Mode() != gin.TestMode {
 		router.Use(tracingMiddleware())
+		router.GET("/prometheus", gin.WrapH(promhttp.Handler()))
+		router.Use(prometheusMiddleware())
 	}
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
@@ -63,4 +90,10 @@ func (server *Server) setupRouter() {
 
 func (server *Server) Start(address string) error {
 	return server.router.Run(address)
+}
+
+func setupPrometheus() {
+	prometheus.Register(totalRequests)
+	prometheus.Register(responseStatus)
+	prometheus.Register(httpDuration)
 }
